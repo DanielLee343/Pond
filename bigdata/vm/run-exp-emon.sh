@@ -14,7 +14,7 @@
 #
 
 EMON="/opt/intel/oneapi/vtune/2021.1.2/bin64/emon"
-RUNDIR="/users/hcli/proj/run"
+RUNDIR="/users/lyuze/Pond"
 BIGDATA_RUN_DIR="${RUNDIR}/bigdata/vm"
 RSTDIR="${BIGDATA_RUN_DIR}/rst/emon-asplos22"
 echo "==> Result directory: $RSTDIR"

@@ -5,7 +5,7 @@
 # Huaicheng Li <lhcwhu@gmail.com>
 #
 
-source /users/hcli/proj/run/run-globals.sh
+source /users/lyuze/Pond/run-globals.sh
 
 #-------------------------------------------------------------------------------
 
@@ -174,6 +174,7 @@ check_base_conf()
 
     sleep 60
 }
+check_base_conf
 
 check_cxl_conf()
 {

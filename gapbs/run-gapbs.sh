@@ -10,8 +10,8 @@
 VTUNE="/opt/intel/oneapi/vtune/2021.1.2/bin64/vtune"
 EMON="/opt/intel/oneapi/vtune/2021.1.2/bin64/emon"
 VMTOUCH="/usr/bin/vmtouch"
-RUNDIR="/users/hcli/proj/run"
-DAMON="/users/hcli/git/damo/damo" # user-space tool
+RUNDIR="/users/lyuze/Pond"
+DAMON="/users/lyuze/Pond/damo" # user-space tool
 TOPLEVDIR=/users/hcli/git/pmu-tools
 TOPLEVCMD="sudo PATH=/users/hcli/bin:$PATH $TOPLEVDIR/toplev -l6 -v --no-desc"
 

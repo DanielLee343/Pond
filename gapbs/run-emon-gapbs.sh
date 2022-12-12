@@ -5,7 +5,7 @@
 # Huaicheng Li <lhcwhu@gmail.com>
 #
 
-RUNDIR="/users/hcli/proj/run"
+RUNDIR="/users/lyuze/Pond"
 
 # Output folder
 #RSTDIR="rst/emon-$(date +%F-%H%M)-$(uname -n | awk -F. '{printf("%s.%s\n", $1, $2)}')"
