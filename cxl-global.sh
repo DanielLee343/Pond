@@ -76,6 +76,11 @@ disable_ht()
     echo off | sudo tee /sys/devices/system/cpu/smt/control >/dev/null 2>&1
 }
 
+enable_ht()
+{
+    echo on | sudo tee /sys/devices/system/cpu/smt/control >/dev/null 2>&1
+}
+
 disable_node1_cpus()
 {
     echo 0 | sudo tee /sys/devices/system/node/node1/cpu*/online >/dev/null 2>&1
@@ -174,7 +179,7 @@ check_base_conf()
 
     sleep 60
 }
-check_base_conf
+# check_base_conf
 
 check_cxl_conf()
 {
@@ -183,13 +188,15 @@ check_cxl_conf()
     disable_ksm
     disable_numa_balancing
     disable_thp
-    disable_ht
+    enable_ht
+    
     disable_turbo
     configure_cxl_exp_cores
     check_pmqos
     disable_swap
 
     nc=$(sudo numactl --hardware | grep 'node 1 cpus' | awk -F: '{print $2}')
+    # disable_ht
 
     # Everything looks correct
     [[ -z $nc ]] && return
@@ -206,6 +213,7 @@ check_cxl_conf()
 
     sleep 60
 }
+check_cxl_conf
 
 reset_base() {
     disable_nmi_watchdog
@@ -221,6 +229,7 @@ reset_base() {
     # make sure all cores are online
     bring_all_cpus_online
 }
+# reset_base
 
 monitor_resource_util()
 {
