@@ -14,7 +14,7 @@ source voltdb-globals.sh
 # Change the following global variables based on your environment
 #-------------------------------------------------------------------------------
 EMON="/opt/intel/oneapi/vtune/2021.1.2/bin64/emon"
-RUNDIR="/users/lyuze/Pond"
+RUNDIR="/home/cc/Pond"
 
 # Output folder
 #RSTDIR="rst/emon-$(date +%F-%H%M)-$(uname -n | awk -F. '{printf("%s.%s\n", $1, $2)}')"
@@ -26,7 +26,7 @@ echo "==> Result directory: $RSTDIR"
 
 TOPLEVDIR=/users/hcli/git/pmu-tools
 TOPLEVCMD="sudo PERF=/users/hcli/bin/perf $TOPLEVDIR/toplev --all -v --no-desc -a sleep 60"
-DAMON="/users/lyuze/Pond/damo" # user-space tool
+DAMON="/home/cc/Pond/damo" # user-space tool
 
 RUN_TOPLEV=0
 RUN_EMON=0
@@ -195,19 +195,19 @@ run_one_exp()
             sleep 10
             # 2. Then, do the data loading phase from the client, wait until it
             # finishes before moving to the next step
-            # /users/lyuze/Pond/voltdb/ycsb
-            local R_YCSB_LOAD_CMD="cd /users/lyuze/Pond/voltdb/ycsb; mkdir -p ${output_dir}; $PREFIX -- bin/ycsb.sh load voltdb -s -P workloads/${w} -P ${VOLTDB_RUN_DIR}/voltdb-load.properties -p voltdb.servers=${VDB_SERVER} > ${loadoutputf} 2>&1"
+            # /home/cc/Pond/voltdb/ycsb
+            local R_YCSB_LOAD_CMD="cd /home/cc/Pond/voltdb/ycsb; mkdir -p ${output_dir}; $PREFIX -- bin/ycsb.sh load voltdb -s -P workloads/${w} -P ${VOLTDB_RUN_DIR}/voltdb-load.properties -p voltdb.servers=${VDB_SERVER} > ${loadoutputf} 2>&1"
             echo "        => YCSB Loading data ..."
             ssh -T "${VDB_CLIENT}" "${R_YCSB_LOAD_CMD}"
             # 3. Do the YCSB transaction phase
 
             echo "        => Running [$w - $et - ${accessmode} - ${nthreads}t - $id]"
-            #local R_YCSB_RUN_CMD="cd /users/lyuze/Pond/voltdb/ycsb; mkdir -p ${output_dir}; for tgt in 10000 20000 40000 80000 160000; do $PREFIX -- bin/ycsb.sh run voltdb -P workloads/${w} -P ${VOLTDB_RUN_DIR}/voltdb-run.properties -p voltdb.servers=${VDB_SERVER} -p requestdistribution=${accessmode} -p threadcount=${nthreads} -p measurement.raw.output_file=${rawlatf} -p maxexecutiontime=120 -p target=\$tgt >${outputf}.\$tgt 2>&1; done"
+            #local R_YCSB_RUN_CMD="cd /home/cc/Pond/voltdb/ycsb; mkdir -p ${output_dir}; for tgt in 10000 20000 40000 80000 160000; do $PREFIX -- bin/ycsb.sh run voltdb -P workloads/${w} -P ${VOLTDB_RUN_DIR}/voltdb-run.properties -p voltdb.servers=${VDB_SERVER} -p requestdistribution=${accessmode} -p threadcount=${nthreads} -p measurement.raw.output_file=${rawlatf} -p maxexecutiontime=120 -p target=\$tgt >${outputf}.\$tgt 2>&1; done"
             if [[ "${RUN_DAMON}" == 1 ]]; then
-                local R_YCSB_RUN_CMD="cd /users/lyuze/Pond/voltdb/ycsb; mkdir -p ${output_dir}; ($PREFIX -- ./bin/ycsb.sh run voltdb -P workloads/${w} -P ${VOLTDB_RUN_DIR}/voltdb-run.properties -p voltdb.servers=${VDB_SERVER} -p requestdistribution=${accessmode} -p threadcount=${nthreads} -p measurement.raw.output_file=${rawlatf} >${outputf} 2>&1 &); sleep 1; ycsb_pid=\$(ps -ef | grep java | grep -v grep | awk '{print \$2}'); sudo $DAMON record -s 1000 -a 100000 -u 1000000 -n 1024 -m 1024 -o $damonf \$ycsb_pid >/dev/null 2>&1"
+                local R_YCSB_RUN_CMD="cd /home/cc/Pond/voltdb/ycsb; mkdir -p ${output_dir}; ($PREFIX -- ./bin/ycsb.sh run voltdb -P workloads/${w} -P ${VOLTDB_RUN_DIR}/voltdb-run.properties -p voltdb.servers=${VDB_SERVER} -p requestdistribution=${accessmode} -p threadcount=${nthreads} -p measurement.raw.output_file=${rawlatf} >${outputf} 2>&1 &); sleep 1; ycsb_pid=\$(ps -ef | grep java | grep -v grep | awk '{print \$2}'); sudo $DAMON record -s 1000 -a 100000 -u 1000000 -n 1024 -m 1024 -o $damonf \$ycsb_pid >/dev/null 2>&1"
             else
-                local R_YCSB_RUN_CMD="cd /users/lyuze/Pond/voltdb/ycsb; mkdir -p ${output_dir}; $PREFIX -- ./bin/ycsb.sh run voltdb -P workloads/${w} -P ${VOLTDB_RUN_DIR}/voltdb-run.properties -p voltdb.servers=${VDB_SERVER} -p requestdistribution=${accessmode} -p threadcount=${nthreads} -p measurement.raw.output_file=${rawlatf} >${outputf} 2>&1"
-                #local R_YCSB_RUN_CMD="cd /users/lyuze/Pond/voltdb/ycsb; mkdir -p ${output_dir}; for tgt in 10000 20000 40000 80000 160000; do $PREFIX -- bin/ycsb.sh run voltdb -P workloads/${w} -P ${VOLTDB_RUN_DIR}/voltdb-run.properties -p voltdb.servers=${VDB_SERVER} -p requestdistribution=${accessmode} -p threadcount=${nthreads} -p measurement.raw.output_file=${rawlatf} -p maxexecutiontime=120 -p target=\$tgt >${outputf}.\$tgt 2>&1; done"
+                local R_YCSB_RUN_CMD="cd /home/cc/Pond/voltdb/ycsb; mkdir -p ${output_dir}; $PREFIX -- ./bin/ycsb.sh run voltdb -P workloads/${w} -P ${VOLTDB_RUN_DIR}/voltdb-run.properties -p voltdb.servers=${VDB_SERVER} -p requestdistribution=${accessmode} -p threadcount=${nthreads} -p measurement.raw.output_file=${rawlatf} >${outputf} 2>&1"
+                #local R_YCSB_RUN_CMD="cd /home/cc/Pond/voltdb/ycsb; mkdir -p ${output_dir}; for tgt in 10000 20000 40000 80000 160000; do $PREFIX -- bin/ycsb.sh run voltdb -P workloads/${w} -P ${VOLTDB_RUN_DIR}/voltdb-run.properties -p voltdb.servers=${VDB_SERVER} -p requestdistribution=${accessmode} -p threadcount=${nthreads} -p measurement.raw.output_file=${rawlatf} -p maxexecutiontime=120 -p target=\$tgt >${outputf}.\$tgt 2>&1; done"
             fi
 
             # Put the entire ssh connection in the background

@@ -8,7 +8,7 @@
 # Change the following global variables based on your environment
 #-------------------------------------------------------------------------------
 EMON="/opt/intel/oneapi/vtune/2021.1.2/bin64/emon" # Emon path
-RUNDIR="/users/lyuze/Pond" # top dir of this repo
+RUNDIR="/home/cc/Pond" # top dir of this repo
 
 # Output folder
 #RSTDIR="rst/emon-$(date +%F-%H%M)-$(uname -n | awk -F. '{printf("%s.%s\n", $1, $2)}')"

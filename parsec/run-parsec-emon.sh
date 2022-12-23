@@ -4,7 +4,7 @@
 #
 
 EMON="/opt/intel/oneapi/vtune/2021.1.2/bin64/emon"
-RUNDIR="/users/lyuze/Pond"
+RUNDIR="/home/cc/Pond"
 
 # Output folder
 #RSTDIR="rst/emon-$(date +%F-%H%M)-$(uname -n | awk -F. '{printf("%s.%s\n", $1, $2)}')"

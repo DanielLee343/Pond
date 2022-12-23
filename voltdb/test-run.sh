@@ -2,7 +2,7 @@
 
 source voltdb-globals.sh
 
-VOLTDB_RUN_DIR="/users/lyuze/Pond/voltdb"
+VOLTDB_RUN_DIR="/home/cc/Pond/voltdb"
 
 cd ${YCSB_DIR}
 

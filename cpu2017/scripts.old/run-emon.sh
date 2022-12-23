@@ -5,7 +5,7 @@
 # Huaicheng Li <lhcwhu@gmail.com>
 #
 
-TOPDIR="/users/lyuze/Pond"
+TOPDIR="/home/cc/Pond"
 
 VTUNE="/opt/intel/oneapi/vtune/2021.1.2/bin64/vtune"
 EMON="/opt/intel/oneapi/vtune/2021.1.2/bin64/emon"

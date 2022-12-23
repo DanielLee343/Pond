@@ -1,11 +1,11 @@
 #!/bin/bash
 
-TOPDIR="/users/lyuze/Pond"
+TOPDIR="/home/cc/Pond"
 
 export VTUNE="/opt/intel/oneapi/vtune/2021.1.2/bin64/vtune"
 export EMON="/opt/intel/oneapi/vtune/2021.1.2/bin64/emon"
 export EMON_EVENT_FILE="$TOPDIR/clx-2s-events.txt"
-export DAMON="/users/lyuze/Pond/damo" # user-space tool
+export DAMON="/home/cc/Pond/damo" # user-space tool
 
 RUNDIR="${TOPDIR}"
 
