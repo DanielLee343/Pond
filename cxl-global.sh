@@ -179,7 +179,7 @@ check_base_conf()
 
     sleep 60
 }
-check_base_conf
+# check_base_conf
 
 check_cxl_conf()
 {
@@ -188,13 +188,15 @@ check_cxl_conf()
     disable_ksm
     disable_numa_balancing
     disable_thp
-    disable_ht
+    enable_ht
+    
     disable_turbo
     configure_cxl_exp_cores
     check_pmqos
     disable_swap
 
     nc=$(sudo numactl --hardware | grep 'node 1 cpus' | awk -F: '{print $2}')
+    # disable_ht
 
     # Everything looks correct
     [[ -z $nc ]] && return
@@ -211,7 +213,7 @@ check_cxl_conf()
 
     sleep 60
 }
-# check_cxl_conf
+check_cxl_conf
 
 reset_base() {
     disable_nmi_watchdog
