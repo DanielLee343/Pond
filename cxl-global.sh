@@ -31,9 +31,19 @@ disable_nmi_watchdog()
     echo 0 | sudo tee /proc/sys/kernel/nmi_watchdog >/dev/null 2>&1
 }
 
+enable_nmi_watchdog()
+{
+    echo 1 | sudo tee /proc/sys/kernel/nmi_watchdog >/dev/null 2>&1
+}
+
 disable_turbo()
 {
     echo 1 | sudo tee /sys/devices/system/cpu/intel_pstate/no_turbo >/dev/null 2>&1
+}
+
+enable_turbo()
+{
+    echo 0 | sudo tee /sys/devices/system/cpu/intel_pstate/no_turbo >/dev/null 2>&1
 }
 
 # 0: no randomization, everyting is static
@@ -45,9 +55,19 @@ disable_va_aslr()
     echo 0 | sudo tee /proc/sys/kernel/randomize_va_space >/dev/null 2>&1
 }
 
+enable_va_aslr()
+{
+    echo 2 | sudo tee /proc/sys/kernel/randomize_va_space >/dev/null 2>&1
+}
+
 disable_swap()
 {
     sudo swapoff -a
+}
+
+enable_swap()
+{
+    sudo swapon -a
 }
 
 disable_ksm()
@@ -55,15 +75,30 @@ disable_ksm()
     echo 0 | sudo tee /sys/kernel/mm/ksm/run >/dev/null 2>&1
 }
 
+enable_ksm()
+{
+    echo 1 | sudo tee /sys/kernel/mm/ksm/run >/dev/null 2>&1
+}
+
 disable_numa_balancing()
 {
     echo 0 | sudo tee /proc/sys/kernel/numa_balancing >/dev/null 2>&1
+}
+
+enable_numa_balancing()
+{
+    echo 1 | sudo tee /proc/sys/kernel/numa_balancing >/dev/null 2>&1
 }
 
 # disable transparent hugepages
 disable_thp()
 {
     echo "never" | sudo tee /sys/kernel/mm/transparent_hugepage/enabled >/dev/null 2>&1
+}
+
+enable_thp()
+{
+    echo "always" | sudo tee /sys/kernel/mm/transparent_hugepage/enabled >/dev/null 2>&1
 }
 
 enable_turbo()
@@ -188,15 +223,13 @@ check_cxl_conf()
     disable_ksm
     disable_numa_balancing
     disable_thp
-    enable_ht
-    
+    disable_ht
     disable_turbo
     configure_cxl_exp_cores
     check_pmqos
     disable_swap
 
     nc=$(sudo numactl --hardware | grep 'node 1 cpus' | awk -F: '{print $2}')
-    # disable_ht
 
     # Everything looks correct
     [[ -z $nc ]] && return
@@ -213,7 +246,7 @@ check_cxl_conf()
 
     sleep 60
 }
-check_cxl_conf
+# check_cxl_conf
 
 reset_base() {
     disable_nmi_watchdog
@@ -243,6 +276,20 @@ monitor_resource_util()
     done
 }
 
+reset_org()
+{
+    enable_nmi_watchdog
+    enable_va_aslr
+    enable_ksm
+    enable_numa_balancing
+    enable_thp
+    enable_ht
+    enable_turbo
+    check_pmqos
+    enable_swap
+    bring_all_cpus_online
+}
+reset_org
 
 #-------------------------------------------------------------------------------
 # For Emon Run
