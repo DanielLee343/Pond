@@ -246,7 +246,7 @@ check_cxl_conf()
 
     sleep 60
 }
-# check_cxl_conf
+check_cxl_conf
 
 reset_base() {
     disable_nmi_watchdog
@@ -289,7 +289,7 @@ reset_org()
     enable_swap
     bring_all_cpus_online
 }
-reset_org
+# reset_org
 
 #-------------------------------------------------------------------------------
 # For Emon Run
