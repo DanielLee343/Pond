@@ -98,7 +98,7 @@ disable_thp()
 
 enable_thp()
 {
-    echo "always" | sudo tee /sys/kernel/mm/transparent_hugepage/enabled >/dev/null 2>&1
+    echo "madvise" | sudo tee /sys/kernel/mm/transparent_hugepage/enabled >/dev/null 2>&1
 }
 
 enable_turbo()
@@ -134,6 +134,14 @@ set_performance_mode()
     done
 }
 
+set_powersaving_mode()
+{
+    #echo "  ===> Placing CPUs in performance mode ..."
+    for governor in /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor; do
+        echo powersave | sudo tee $governor >/dev/null 2>&1
+    done
+}
+
 disable_node1_mem()
 {
     echo 0 | sudo tee /sys/devices/system/node/node1/memory*/online >/dev/null 2>&1
@@ -147,6 +155,8 @@ check_pmqos()
     set_performance_mode
     [[ -n "$pmqospid" ]] && return
 
+    echo "pmqospid is empty, launching it ..."
+
     sudo nohup ${TOPDIR}/pmqos >/dev/null 2>&1 &
     sleep 3
     # double check
@@ -155,6 +165,14 @@ check_pmqos()
         echo "==> Error: failed to start pmqos!!!!"
         exit
     fi
+}
+
+kill_pmqos()
+{
+    # local pmqospid=$(ps -ef | grep pmqos | grep -v grep | grep -v sudo | awk '{print $2}')
+    # sudo kill -9 $pmqospid
+    sudo pkill -9 pmqos >/dev/null 2>&1
+    set_powersaving_mode
 }
 
 # Keep all cores on Node 0 online while keeping all cores on Node 1 offline
@@ -218,6 +236,7 @@ check_base_conf()
     nc=$(sudo numactl --hardware | grep 'node 1 cpus' | awk -F: '{print $2}')
 
     # Everything looks correct
+    echo "Everything looks correct"
     [[ ! -z $nc ]] && return
 
     # Bummer, let's try bring the cores on Node 1 up...
@@ -303,8 +322,8 @@ reset_org()
     enable_thp
     enable_ht
     enable_turbo
-    check_pmqos
-    enable_swap
+    kill_pmqos
+    # enable_swap
     bring_all_cpus_online
 }
 # reset_org
@@ -492,8 +511,5 @@ elif [ $1 = "base" ]; then
 elif [ $1 = "cxl" ]; then
     echo "setting cxl..."
     check_cxl_conf
-elif [ $1 = "base_" ]; then
-    echo "setting base_..."
-    reset_base
 fi
 echo "done"
