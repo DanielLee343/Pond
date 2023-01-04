@@ -171,17 +171,35 @@ configure_base_exp_cores()
 {
     # To be safe, let's bring all the cores online first
     echo 1 | sudo tee /sys/devices/system/cpu/cpu*/online >/dev/null 2>&1
+    # sleep 10
     # Leave half of the cores online for both Node 0 and Node 1
-	local cores_per_socket=$(lscpu | grep -i 'Core(s) per socket' | awk '{print $4}')
-    local half_cores_per_socket=$((cores_per_socket / 2))
-    local total_cores=$((cores_per_socket * 2))
+	local cores_per_socket=$(lscpu | grep -i 'Core(s) per socket' | awk '{print $4}') # 10
+    # echo $cores_per_socket
+    local half_cores_per_socket=$((cores_per_socket / 2)) # 5
+    # echo $half_cores_per_socket
+    local total_cores=$((cores_per_socket * 2)) # 20
+    # echo $total_cores
+    # first half, no problem
     for ((i = half_cores_per_socket; i < cores_per_socket; i++)); do
+        # echo $i
         echo 0 | sudo tee /sys/devices/system/cpu/cpu$i/online >/dev/null 2>&1
     done
 
-    for ((i = cores_per_socket + half_cores_per_socket; i < total_cores; i++)); do
-        echo 0 | sudo tee /sys/devices/system/cpu/cpu$i/online >/dev/null 2>&1
-    done
+    # second half, if half_cores_per_socket is even, no problem, otherwise, we need to shift 1 index,
+    # so that the remaining cores are equally distributed
+    if [ $((half_cores_per_socket%2)) -eq 0 ]; then
+        echo "even number half cores!"
+        for ((i = cores_per_socket + half_cores_per_socket; i < total_cores; i++)); do
+            # echo $i
+            echo 0 | sudo tee /sys/devices/system/cpu/cpu$i/online >/dev/null 2>&1
+        done
+    else
+        echo "odd number half cores!"
+        for ((i = cores_per_socket + half_cores_per_socket - 1; i < total_cores - 1; i++)); do
+            # echo $i
+            echo 0 | sudo tee /sys/devices/system/cpu/cpu$i/online >/dev/null 2>&1
+        done
+    fi
 }
 
 check_base_conf()
