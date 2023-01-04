@@ -246,7 +246,7 @@ check_cxl_conf()
 
     sleep 60
 }
-check_cxl_conf
+# check_cxl_conf
 
 reset_base() {
     disable_nmi_watchdog
@@ -463,3 +463,16 @@ run_emon_all()
     done
 }
 
+# $1: environment <org, base, cxl>
+
+if [ $1 = "org" ]; then
+    echo "setting org..."
+    reset_org
+elif [ $1 = "base" ]; then
+    echo "setting base..."
+    check_base_conf
+elif [ $1 = "cxl" ]; then
+    echo "setting cxl..."
+    check_cxl_conf
+fi
+echo "done"
