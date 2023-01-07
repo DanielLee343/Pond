@@ -318,7 +318,8 @@ reset_org()
     enable_nmi_watchdog
     enable_va_aslr
     enable_ksm
-    enable_numa_balancing
+    # enable_numa_balancing
+    disable_numa_balancing
     enable_thp
     enable_ht
     enable_turbo
