@@ -511,5 +511,7 @@ elif [ $1 = "base" ]; then
 elif [ $1 = "cxl" ]; then
     echo "setting cxl..."
     check_cxl_conf
+else
+    echo "wrong settings!"
 fi
 echo "done"
