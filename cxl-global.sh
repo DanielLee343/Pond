@@ -185,6 +185,12 @@ configure_cxl_exp_cores()
     echo 0 | sudo tee /sys/devices/system/node/node1/cpu*/online >/dev/null 2>&1
 }
 
+configure_cxl_debug()
+{
+    # bring all the cores online first
+    echo 1 | sudo tee /sys/devices/system/cpu/cpu*/online >/dev/null 2>&1
+}
+
 configure_base_exp_cores()
 {
     # To be safe, let's bring all the cores online first
@@ -282,6 +288,39 @@ check_cxl_conf()
     [[ ! -z $nc ]] && echo "===> Failed to disable all the cores on Node 1 for CXL experiments ..." && exit
 
     sleep 60
+}
+
+check_cxl_conf_debug()
+{
+    disable_nmi_watchdog
+    disable_va_aslr
+    disable_ksm
+    disable_numa_balancing
+    disable_thp
+    disable_ht
+    disable_turbo
+    # configure_cxl_exp_cores
+    configure_cxl_debug
+    check_pmqos
+    disable_swap
+
+    nc=$(sudo numactl --hardware | grep 'node 1 cpus' | awk -F: '{print $2}')
+    echo $nc
+
+    # # Everything looks correct
+    # [[ -z $nc ]] && return
+
+    # # Bummer, for CXL-emulation, let's take the cores on Node 1 offline...
+    # echo "===> Warning: CXL experiment environment NOT properly setup"
+    # echo "     I see online cores [$nc] on Node 1..."
+
+    # echo "===> Disabling all the cores on Node 1 now ..."
+    # echo 0 | sudo tee /sys/devices/system/node/node1/cpu*/online >/dev/null 2>&1
+
+    # nc=$(sudo numactl --hardware | grep 'node 1 cpus' | awk -F: '{print $2}')
+    # [[ ! -z $nc ]] && echo "===> Failed to disable all the cores on Node 1 for CXL experiments ..." && exit
+
+    # sleep 60
 }
 # check_cxl_conf
 
@@ -512,6 +551,9 @@ elif [ $1 = "base" ]; then
 elif [ $1 = "cxl" ]; then
     echo "setting cxl..."
     check_cxl_conf
+elif [ $1 = "cxl_debug" ]; then
+    echo "setting cxl_debug..."
+    check_cxl_conf_debug
 else
     echo "wrong input!"
 fi

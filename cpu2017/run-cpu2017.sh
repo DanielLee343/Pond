@@ -192,21 +192,21 @@ run_one_workload_cxl()
     local id=$2
     local mem=$3
 
-    run_one_exp "$w" "L100" $id $mem
+    # run_one_exp "$w" "L100" $id $mem
     run_one_exp "$w" "L0" $id
-    # More Splits
-    run_one_exp "$w" "95" $id $mem
-    run_one_exp "$w" "90" $id $mem
-    run_one_exp "$w" "85" $id $mem
-    run_one_exp "$w" "80" $id $mem
-    run_one_exp "$w" "75" $id $mem
-    run_one_exp "$w" "70" $id $mem
-    run_one_exp "$w" "60" $id $mem
-    run_one_exp "$w" "50" $id $mem
-    run_one_exp "$w" "40" $id $mem
-    run_one_exp "$w" "30" $id $mem
-    run_one_exp "$w" "25" $id $mem
-    run_one_exp "$w" "CXL-Interleave" $id
+    # # More Splits
+    # run_one_exp "$w" "95" $id $mem
+    # run_one_exp "$w" "90" $id $mem
+    # run_one_exp "$w" "85" $id $mem
+    # run_one_exp "$w" "80" $id $mem
+    # run_one_exp "$w" "75" $id $mem
+    # run_one_exp "$w" "70" $id $mem
+    # run_one_exp "$w" "60" $id $mem
+    # run_one_exp "$w" "50" $id $mem
+    # run_one_exp "$w" "40" $id $mem
+    # run_one_exp "$w" "30" $id $mem
+    # run_one_exp "$w" "25" $id $mem
+    # run_one_exp "$w" "CXL-Interleave" $id
 }
 
 # run baseline experiments (e.g. "Base-Interleave"), we put this into a seperate
@@ -230,7 +230,7 @@ run_seq_cxl()
 {
     check_cxl_conf
 
-    for id in 1 2 3 4 5; do # 5 runs for each experiment
+    for id in 1; do # 5 runs for each experiment
         for ((i = 0; i < ${#warr[@]}; i++)); do
             w=${warr[$i]}
             m=${marr[$i]}
@@ -262,7 +262,7 @@ run_seq_base()
 main()
 {
     run_seq_cxl
-    run_seq_base
+    # run_seq_base
 }
 
 main

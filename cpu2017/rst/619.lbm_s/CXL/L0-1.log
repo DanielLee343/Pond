@@ -1,0 +1,30 @@
+===> MemEater reserving [0] MB on Node 0...
+numactl --cpunodebind 0 --membind 1 -- bash cmd.sh
+Start: Wed Feb  1 21:07:22 UTC 2023
+End: Wed Feb  1 21:07:23 UTC 2023
+
+
+
+
+numactl --cpunodebind 0 --membind 1 -- bash cmd.sh
+
+#!/bin/bash
+ulimit -s unlimited
+export OMP_NUM_THREADS=8
+export OMP_STACKSIZE=122880
+./lbm_s_base.mytest-m64 2000 reference.dat 0 0 200_200_260_ldc.of > lbm.out 2>> lbm.err
+===> MemEater reserving [0] MB on Node 0...
+numactl --cpunodebind 0 --membind 1 -- bash cmd.sh
+Start: Wed Feb  1 21:08:08 UTC 2023
+End: Wed Feb  1 21:08:08 UTC 2023
+
+
+
+
+numactl --cpunodebind 0 --membind 1 -- bash cmd.sh
+
+#!/bin/bash
+ulimit -s unlimited
+export OMP_NUM_THREADS=8
+export OMP_STACKSIZE=122880
+./lbm_s_base.mytest-m64 2000 reference.dat 0 0 200_200_260_ldc.of > lbm.out 2>> lbm.err
