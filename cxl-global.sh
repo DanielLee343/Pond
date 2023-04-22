@@ -185,6 +185,16 @@ configure_cxl_exp_cores()
     echo 0 | sudo tee /sys/devices/system/node/node1/cpu*/online >/dev/null 2>&1
 }
 
+configure_cxl_debug_cores()
+{
+    # To be safe, let's bring all the cores online first
+    echo 1 | sudo tee /sys/devices/system/cpu/cpu*/online >/dev/null 2>&1
+
+    # Disable all cores on Node 1
+    # echo 0 | sudo tee /sys/devices/system/node/node1/cpu*/online >/dev/null 2>&1
+
+}
+
 configure_base_exp_cores()
 {
     # To be safe, let's bring all the cores online first
@@ -285,6 +295,20 @@ check_cxl_conf()
 }
 # check_cxl_conf
 
+check_cxl_conf_debug()
+{
+    disable_nmi_watchdog
+    disable_va_aslr
+    disable_ksm
+    disable_numa_balancing
+    disable_thp
+    disable_ht
+    disable_turbo
+    # configure_cxl_exp_cores
+    configure_cxl_debug_cores
+    check_pmqos
+    disable_swap
+}
 reset_base() {
     disable_nmi_watchdog
     disable_va_aslr
@@ -511,6 +535,9 @@ elif [ $1 = "base" ]; then
 elif [ $1 = "cxl" ]; then
     echo "setting cxl..."
     check_cxl_conf
+elif [ $1 = "cxl-debug" ]; then
+    echo "setting cxl debug..."
+    check_cxl_conf_debug
 else
     echo "wrong settings!"
 fi
