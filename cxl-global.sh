@@ -4,13 +4,12 @@
 #
 # Huaicheng Li <lhcwhu@gmail.com>
 #
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
 source $DIR/run-globals.sh
 
 #-------------------------------------------------------------------------------
 
-get_sysinfo()
-{
+get_sysinfo() {
     uname -a
     echo "--------------------------"
     sudo numactl --hardware
@@ -20,29 +19,24 @@ get_sysinfo()
     cat /proc/meminfo
 }
 
-flush_fs_caches()
-{
+flush_fs_caches() {
     echo 3 | sudo tee /proc/sys/vm/drop_caches >/dev/null 2>&1
     sleep 10
 }
 
-disable_nmi_watchdog()
-{
+disable_nmi_watchdog() {
     echo 0 | sudo tee /proc/sys/kernel/nmi_watchdog >/dev/null 2>&1
 }
 
-enable_nmi_watchdog()
-{
+enable_nmi_watchdog() {
     echo 1 | sudo tee /proc/sys/kernel/nmi_watchdog >/dev/null 2>&1
 }
 
-disable_turbo()
-{
+disable_turbo() {
     echo 1 | sudo tee /sys/devices/system/cpu/intel_pstate/no_turbo >/dev/null 2>&1
 }
 
-enable_turbo()
-{
+enable_turbo() {
     echo 0 | sudo tee /sys/devices/system/cpu/intel_pstate/no_turbo >/dev/null 2>&1
 }
 
@@ -50,105 +44,86 @@ enable_turbo()
 # 1: conservative randomization, shared libraries, stack, mmap(), VDSO and heap
 # are randomized
 # 2: full randomization, the above points in 1 plus brk()
-disable_va_aslr()
-{
+disable_va_aslr() {
     echo 0 | sudo tee /proc/sys/kernel/randomize_va_space >/dev/null 2>&1
 }
 
-enable_va_aslr()
-{
+enable_va_aslr() {
     echo 2 | sudo tee /proc/sys/kernel/randomize_va_space >/dev/null 2>&1
 }
 
-disable_swap()
-{
+disable_swap() {
     sudo swapoff -a
 }
 
-enable_swap()
-{
+enable_swap() {
     sudo swapon -a
 }
 
-disable_ksm()
-{
+disable_ksm() {
     echo 0 | sudo tee /sys/kernel/mm/ksm/run >/dev/null 2>&1
 }
 
-enable_ksm()
-{
+enable_ksm() {
     echo 1 | sudo tee /sys/kernel/mm/ksm/run >/dev/null 2>&1
 }
 
-disable_numa_balancing()
-{
+disable_numa_balancing() {
     echo 0 | sudo tee /proc/sys/kernel/numa_balancing >/dev/null 2>&1
 }
 
-enable_numa_balancing()
-{
+enable_numa_balancing() {
     echo 1 | sudo tee /proc/sys/kernel/numa_balancing >/dev/null 2>&1
 }
 
 # disable transparent hugepages
-disable_thp()
-{
+disable_thp() {
     echo "never" | sudo tee /sys/kernel/mm/transparent_hugepage/enabled >/dev/null 2>&1
 }
 
-enable_thp()
-{
+enable_thp() {
     echo "madvise" | sudo tee /sys/kernel/mm/transparent_hugepage/enabled >/dev/null 2>&1
 }
 
-enable_turbo()
-{
+enable_turbo() {
     echo 0 | sudo tee /sys/devices/system/cpu/intel_pstate/no_turbo >/dev/null 2>&1
 }
 
-disable_ht()
-{
+disable_ht() {
     echo off | sudo tee /sys/devices/system/cpu/smt/control >/dev/null 2>&1
 }
 
-enable_ht()
-{
+enable_ht() {
     echo on | sudo tee /sys/devices/system/cpu/smt/control >/dev/null 2>&1
 }
 
-disable_node1_cpus()
-{
+disable_node1_cpus() {
     echo 0 | sudo tee /sys/devices/system/node/node1/cpu*/online >/dev/null 2>&1
 }
 
-bring_all_cpus_online()
-{
+bring_all_cpus_online() {
     echo 1 | sudo tee /sys/devices/system/cpu/cpu*/online >/dev/null 2>&1
 }
 
-set_performance_mode()
-{
+set_performance_mode() {
     #echo "  ===> Placing CPUs in performance mode ..."
     for governor in /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor; do
         echo performance | sudo tee $governor >/dev/null 2>&1
     done
 }
 
-set_powersaving_mode()
-{
+set_powersaving_mode() {
     #echo "  ===> Placing CPUs in performance mode ..."
     for governor in /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor; do
         echo powersave | sudo tee $governor >/dev/null 2>&1
     done
 }
 
-disable_node1_mem()
-{
+disable_node1_mem() {
     echo 0 | sudo tee /sys/devices/system/node/node1/memory*/online >/dev/null 2>&1
 }
 
-check_pmqos()
-{
+check_pmqos() {
     local pmqospid=$(ps -ef | grep pmqos | grep -v grep | grep -v sudo | awk '{print $2}')
     #echo $pmqospid
 
@@ -167,8 +142,7 @@ check_pmqos()
     fi
 }
 
-kill_pmqos()
-{
+kill_pmqos() {
     # local pmqospid=$(ps -ef | grep pmqos | grep -v grep | grep -v sudo | awk '{print $2}')
     # sudo kill -9 $pmqospid
     sudo pkill -9 pmqos >/dev/null 2>&1
@@ -176,8 +150,7 @@ kill_pmqos()
 }
 
 # Keep all cores on Node 0 online while keeping all cores on Node 1 offline
-configure_cxl_exp_cores()
-{
+configure_cxl_exp_cores() {
     # To be safe, let's bring all the cores online first
     echo 1 | sudo tee /sys/devices/system/cpu/cpu*/online >/dev/null 2>&1
 
@@ -185,8 +158,7 @@ configure_cxl_exp_cores()
     echo 0 | sudo tee /sys/devices/system/node/node1/cpu*/online >/dev/null 2>&1
 }
 
-configure_cxl_debug_cores()
-{
+configure_cxl_debug_cores() {
     # To be safe, let's bring all the cores online first
     echo 1 | sudo tee /sys/devices/system/cpu/cpu*/online >/dev/null 2>&1
 
@@ -195,13 +167,12 @@ configure_cxl_debug_cores()
 
 }
 
-configure_base_exp_cores()
-{
+configure_base_exp_cores() {
     # To be safe, let's bring all the cores online first
     echo 1 | sudo tee /sys/devices/system/cpu/cpu*/online >/dev/null 2>&1
     # sleep 10
     # Leave half of the cores online for both Node 0 and Node 1
-	local cores_per_socket=$(lscpu | grep -i 'Core(s) per socket' | awk '{print $4}') # 10
+    local cores_per_socket=$(lscpu | grep -i 'Core(s) per socket' | awk '{print $4}') # 10
     # echo $cores_per_socket
     local half_cores_per_socket=$((cores_per_socket / 2)) # 5
     # echo $half_cores_per_socket
@@ -215,7 +186,7 @@ configure_base_exp_cores()
 
     # second half, if half_cores_per_socket is even, no problem, otherwise, we need to shift 1 index,
     # so that the remaining cores are equally distributed
-    if [ $((half_cores_per_socket%2)) -eq 0 ]; then
+    if [ $((half_cores_per_socket % 2)) -eq 0 ]; then
         echo "even number half cores!"
         for ((i = cores_per_socket + half_cores_per_socket; i < total_cores; i++)); do
             # echo $i
@@ -230,8 +201,7 @@ configure_base_exp_cores()
     fi
 }
 
-check_base_conf()
-{
+check_base_conf() {
     disable_nmi_watchdog
     disable_va_aslr
     disable_ksm
@@ -263,8 +233,7 @@ check_base_conf()
 }
 # check_base_conf
 
-check_cxl_conf()
-{
+check_cxl_conf() {
     disable_nmi_watchdog
     disable_va_aslr
     disable_ksm
@@ -295,8 +264,7 @@ check_cxl_conf()
 }
 # check_cxl_conf
 
-check_cxl_conf_debug()
-{
+check_cxl_conf_debug() {
     disable_nmi_watchdog
     disable_va_aslr
     disable_ksm
@@ -306,6 +274,17 @@ check_cxl_conf_debug()
     disable_turbo
     # configure_cxl_exp_cores
     configure_cxl_debug_cores
+    check_pmqos
+    disable_swap
+}
+check_vm_conf() {
+    disable_nmi_watchdog
+    disable_va_aslr
+    disable_ksm
+    disable_numa_balancing
+    disable_thp
+    disable_ht
+    disable_turbo
     check_pmqos
     disable_swap
 }
@@ -325,20 +304,18 @@ reset_base() {
 }
 # reset_base
 
-monitor_resource_util()
-{
+monitor_resource_util() {
     while true; do
         local o=$(sudo numactl --hardware)
         local node0_free_mb=$(echo "$o" | grep "node 0 free" | awk '{print $4}')
-		local node1_free_mb=$(echo "$o" | grep "node 1 free" | awk '{print $4}')
+        local node1_free_mb=$(echo "$o" | grep "node 1 free" | awk '{print $4}')
         echo "$(date +"%D %H%M%S") ${node0_free_mb} ${node1_free_mb}"
         #pidstat -r -u -d -l -p ALL -U -h 5 100000000 > pidstat.log &
         sleep 5
     done
 }
 
-reset_org()
-{
+reset_org() {
     enable_nmi_watchdog
     enable_va_aslr
     enable_ksm
@@ -359,14 +336,13 @@ reset_org()
 # $1: CXL experiment type array, EXL_EXPARR, (pass array by name!)
 # $2: Base experiment type array
 # $3: Result directory
-init_emon_profiling()
-{
+init_emon_profiling() {
     # Attention: we are passing array name, and need convert it into an internal
     # array format
     local cxl_exparr_name=$1[@]
-    local cxl_exparr=( "${!cxl_exparr_name}" )
+    local cxl_exparr=("${!cxl_exparr_name}")
     local base_exparr_name=$2[@]
-    local base_exparr=( "${!base_exparr_name}" )
+    local base_exparr=("${!base_exparr_name}")
     local rstdir=$3
 
     mkdir -p $rstdir
@@ -385,11 +361,11 @@ init_emon_profiling()
             exit
         fi
 
-        echo "${run_cmd}" > emon-$e.sh
+        echo "${run_cmd}" >emon-$e.sh
         chmod u+x emon-$e.sh
         # Keep one copy for record
-        cat cmd.sh > $rstdir/emon-${e}.cmd
-        cat emon-$e.sh >> $rstdir/emon-${e}.cmd
+        cat cmd.sh >$rstdir/emon-${e}.cmd
+        cat emon-$e.sh >>$rstdir/emon-${e}.cmd
     done
 
     # BASE
@@ -402,24 +378,23 @@ init_emon_profiling()
             exit
         fi
 
-        echo "${run_cmd}" > emon-$e.sh
+        echo "${run_cmd}" >emon-$e.sh
         chmod u+x emon-$e.sh
         # Keep one copy for record
-        cat cmd.sh > $rstdir/emon-${e}.sh
-        cat emon-$e.sh >> $rstdir/emon-${e}.sh
+        cat cmd.sh >$rstdir/emon-${e}.sh
+        cat emon-$e.sh >>$rstdir/emon-${e}.sh
     done
 }
 
 # $1: CXL experiment type array, EXL_EXPARR, (pass array by name!)
 # $2: Base experiment type array
-cleanup_emon_profiling()
-{
+cleanup_emon_profiling() {
     # Attention: we are passing array name, and need convert it into an internal
     # array format
     local cxl_exparr_name=$1[@]
-    local cxl_exparr=( "${!cxl_exparr_name}" )
+    local cxl_exparr=("${!cxl_exparr_name}")
     local base_exparr_name=$2[@]
-    local base_exparr=( "${!base_exparr_name}" )
+    local base_exparr=("${!base_exparr_name}")
 
     # CXL
     for ((et = 0; et < ${#cxl_exparr[@]}; et++)); do
@@ -439,8 +414,7 @@ cleanup_emon_profiling()
 # $2: experiment id, e.g., "1", "2", etc.
 # $3: result directory
 # $4: memory footprint in MB (for running more splits)
-run_emon_one()
-{
+run_emon_one() {
     local e=$1
     local id=$2
     local rstdir=$3
@@ -459,15 +433,15 @@ run_emon_one()
 
     flush_fs_caches
 
-    get_sysinfo > $sysinfof 2>&1
-    sudo ${EMON} -v > $emonvf
-    sudo ${EMON} -M > $emonmf
+    get_sysinfo >$sysinfof 2>&1
+    sudo ${EMON} -v >$emonvf
+    sudo ${EMON} -M >$emonmf
 
     # if needed, run memeater first
     # TODO ...
 
     # Run emon along with the workload
-    ./emon-${e}.sh > $rstdir/out-${e}-${id} &
+    ./emon-${e}.sh >$rstdir/out-${e}-${id} &
 
     local c=$(basename ${PWD} | awk -F- '{print $1}')
     epid=$!
@@ -475,8 +449,8 @@ run_emon_one()
     echo "    => $e"
 
     sudo ${EMON} -i ${EMON_EVENT_FILE} -f "$emondatf" >/dev/null 2>&1 &
-    pidstat -r -u -d -l -v -T ALL -p ALL -U -h 5 1000000 > $pidstatf &
-    echo "Date Time Node0-Free-Mem-MB Node1-Free-Mem-MB" > $memf
+    pidstat -r -u -d -l -v -T ALL -p ALL -U -h 5 1000000 >$pidstatf &
+    echo "Date Time Node0-Free-Mem-MB Node1-Free-Mem-MB" >$memf
     monitor_resource_util >>$memf 2>&1 &
     mpid=$!
     disown $mpid # avoid the "killed" message
@@ -492,12 +466,11 @@ run_emon_one()
 # $3: Experiment id
 # $4: Result directory
 # $5: Memory footprint in MB (for running more splits)
-run_emon_all()
-{
+run_emon_all() {
     # Attention: we are passing array name, and need convert it into an internal
     # array format
     local exparr_name=$2[@]
-    local exparr=( "${!exparr_name}" )
+    local exparr=("${!exparr_name}")
     local id=$3
     local rstdir=$4
     local m=$5
@@ -514,8 +487,8 @@ run_emon_all()
     fi
 
     mkdir -p $rstdir
-    sudo $EMON -v > $rstdir/emon-v.dat
-    sudo $EMON -M > $rstdir/emon-m.dat
+    sudo $EMON -v >$rstdir/emon-v.dat
+    sudo $EMON -M >$rstdir/emon-m.dat
 
     # CXL emon profiling
 
@@ -538,6 +511,9 @@ elif [ $1 = "cxl" ]; then
 elif [ $1 = "cxl-debug" ]; then
     echo "setting cxl debug..."
     check_cxl_conf_debug
+elif [ $1 = "vm" ]; then
+    echo "setting vm mode..."
+    check_vm_conf
 else
     echo "wrong settings!"
 fi
